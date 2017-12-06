@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+
+	
+	
+Vagrant.configure(2) do |config|
+	print "How many VM's do you want: "
+	vmNum = STDIN.gets.chomp
+	servers=[]
+	temp = vmNum.to_i - 1
+	for i in 0..temp.to_i  do
+		print "Hostname: "
+		hostname = STDIN.gets.chomp
+		print "IP: "
+		ip = STDIN.gets.chomp
+		print "ram: "
+		ram = STDIN.gets.chomp
+		print "cpu: "
+		cpu = STDIN.gets.chomp	
+		servers[i] = {
+			:hostname => hostname,
+			:ip => ip,
+			:box => "chadUbuntu",
+			:ram => ram,
+			:cpu => cpu
+		}
+	end
+	servers.each do |machine|
+		config.vm.define machine[:hostname] do |node|
+			node.vm.box = machine[:box]
+			node.vm.hostname = machine[:hostname]
+			node.vm.synced_folder "/QA_Training/dev-ops/vagrant_intro", "/vagrant_data"
+			node.vm.provider "virtualbox" do |vb|
+				vb.customize ["modifyvm", :id, "--memory", machine[:ram]]
+				vb.gui = true
+			end
+		end
+	end
+end
+	
